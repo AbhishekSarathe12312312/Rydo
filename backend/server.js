@@ -14,7 +14,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://rydo-ten.vercel.app/",
+    origin: "https://rydo-ten.vercel.app",
     credentials: true,
   }),
 );
