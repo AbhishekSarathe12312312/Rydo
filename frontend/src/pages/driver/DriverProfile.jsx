@@ -24,7 +24,7 @@ const DriverProfile = () => {
   const getProfile = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:8000/api/user/driver/get-profile",
+        `${import.meta.env.VITE_API_URL}/api/user/driver/get-profile`,
         {
           withCredentials: true,
         },
@@ -79,7 +79,7 @@ const DriverProfile = () => {
       setSaving(true);
 
       const { data } = await axios.put(
-        "http://localhost:8000/api/user/driver/update-profile",
+        `${import.meta.env.VITE_API_URL}/api/user/driver/update-profile`,
         {
           name,
           phone,

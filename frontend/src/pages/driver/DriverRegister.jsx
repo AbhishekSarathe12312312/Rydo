@@ -44,7 +44,7 @@ const DriverRegister = () => {
       setLoading(true);
 
       const { data } = await axios.post(
-        "http://localhost:8000/api/user/driver/register",
+        `${import.meta.env.VITE_API_URL}/api/user/driver/register`,
         {
           name,
           email,

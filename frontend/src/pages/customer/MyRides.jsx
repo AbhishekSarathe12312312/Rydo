@@ -11,7 +11,7 @@ const MyRides = () => {
   const fetchMyRides = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:8000/api/ride/my-rides",
+        `${import.meta.env.VITE_API_URL}/api/ride/my-rides`,
         {
           withCredentials: true,
         },

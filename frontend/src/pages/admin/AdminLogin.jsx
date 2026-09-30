@@ -36,7 +36,7 @@ const AdminLogin = () => {
       setLoading(true);
 
       const { data } = await axios.post(
-        "http://localhost:8000/api/user/admin/login",
+        `${import.meta.env.VITE_API_URL}/api/user/admin/login`,
         {
           email,
           password,

@@ -11,7 +11,7 @@ const ManageDrivers = () => {
   const getAllDrivers = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:8000/api/user/admin/drivers",
+        `${import.meta.env.VITE_API_URL}/api/user/admin/drivers`,
         {
           withCredentials: true,
         },
@@ -36,7 +36,7 @@ const ManageDrivers = () => {
       setActionLoading(driverId);
 
       const { data } = await axios.put(
-        "http://localhost:8000/api/user/admin/driver/approve",
+        `${import.meta.env.VITE_API_URL}/api/user/admin/driver/approve`,
         {
           driverId,
         },
@@ -71,7 +71,7 @@ const ManageDrivers = () => {
       setActionLoading(driverId);
 
       const { data } = await axios.put(
-        "http://localhost:8000/api/user/admin/driver/reject",
+        `${import.meta.env.VITE_API_URL}/api/user/admin/driver/reject`,
         {
           driverId,
         },

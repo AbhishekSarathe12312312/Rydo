@@ -11,7 +11,7 @@ const DriverRideRequests = () => {
   const getRideRequests = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:8000/api/ride/driver/requests",
+        `${import.meta.env.VITE_API_URL}/api/ride/driver/requests`,
         {
           withCredentials: true,
         },
@@ -38,7 +38,7 @@ const DriverRideRequests = () => {
       setActionLoading(rideId);
 
       const { data } = await axios.put(
-        "http://localhost:8000/api/ride/driver/accept-ride",
+        `${import.meta.env.VITE_API_URL}/api/ride/driver/accept-ride`,
         {
           rideId,
         },

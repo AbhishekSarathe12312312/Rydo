@@ -12,7 +12,7 @@ const AdminDashboard = () => {
   const checkAdminAuth = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:8000/api/user/admin/check",
+        `${import.meta.env.VITE_API_URL}/api/user/admin/check`,
         {
           withCredentials: true,
         },

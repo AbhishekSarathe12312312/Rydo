@@ -30,7 +30,7 @@ const BookRide = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/ride/create-ride",
+        `${import.meta.env.VITE_API_URL}/api/ride/create-ride`,
         {
           pickup: formData.pickup,
           destination: formData.destination,
