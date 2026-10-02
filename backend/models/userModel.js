@@ -34,16 +34,15 @@ const userSchema = new mongoose.Schema(
       enum: ["customer", "driver", "admin"],
       default: "customer",
     },
+    profileImage: {
+      type: String,
+      default: "",
+    },
 
     driverStatus: {
       type: String,
       enum: ["pending", "approved", "rejected"],
       default: null,
-    },
-
-    profileImage: {
-      type: String,
-      default: "",
     },
 
     vehicleType: {

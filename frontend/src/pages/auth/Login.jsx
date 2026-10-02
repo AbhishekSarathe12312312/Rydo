@@ -41,18 +41,26 @@ const Login = () => {
           email,
           password,
         },
-        {
-          withCredentials: true,
-        },
       );
 
       if (data.success) {
+        // Save token
+        sessionStorage.setItem("token", data.token);
+
+        // Save user details for UI/Navbar
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+
+        // Notify Navbar about login
+        window.dispatchEvent(new Event("authChanged"));
+
         toast.success(data.message);
 
         if (data.user.role === "driver") {
           navigate("/driver/dashboard");
         } else if (data.user.role === "customer") {
           navigate("/customer/dashboard");
+        } else if (data.user.role === "admin") {
+          navigate("/admin/dashboard");
         }
       }
     } catch (error) {

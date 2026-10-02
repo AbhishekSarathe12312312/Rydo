@@ -3,57 +3,7 @@ import { Link } from "react-router-dom";
 const Home = () => {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-      {/* Navbar */}
-      <nav className="border-b border-gray-800 bg-gray-950/95">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <Link to="/" className="text-2xl font-bold text-blue-500">
-            Rydo
-          </Link>
-
-          <div className="hidden items-center gap-8 md:flex">
-            <Link to="/" className="text-sm text-white">
-              Home
-            </Link>
-
-            <Link
-              to="/about"
-              className="text-sm text-gray-400 transition hover:text-white"
-            >
-              About
-            </Link>
-
-            <Link
-              to="/services"
-              className="text-sm text-gray-400 transition hover:text-white"
-            >
-              Services
-            </Link>
-
-            <Link
-              to="/contact"
-              className="text-sm text-gray-400 transition hover:text-white"
-            >
-              Contact
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              to="/login"
-              className="rounded-lg border border-gray-700 px-4 py-2 text-sm font-medium transition hover:border-gray-500"
-            >
-              Login
-            </Link>
-
-            <Link
-              to="/register"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold transition hover:bg-blue-700"
-            >
-              Sign Up
-            </Link>
-          </div>
-        </div>
-      </nav>
+     
 
       {/* Hero */}
       <section className="relative overflow-hidden">
@@ -304,21 +254,7 @@ const Home = () => {
           </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-gray-800 bg-gray-900">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h3 className="text-xl font-bold text-blue-500">Rydo</h3>
-
-            <p className="mt-1 text-sm text-gray-500">Your ride, your way.</p>
-          </div>
-
-          <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} Rydo. All rights reserved.
-          </p>
-        </div>
-      </footer>
+  
     </div>
   );
 };

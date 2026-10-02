@@ -4,11 +4,12 @@ import User from "../models/userModel.js";
 import OTP from "../models/otpModel.js";
 import { sendOTPEmail } from "../utils/sendOTPEmail.js";
 import jwt from "jsonwebtoken";
+import getDataUri from "../utils/dataUri.js";
+import cloudinary from "../config/cloudinary.js";
 
 // ===============================
 // CUSTOMER REGISTER
 // ===============================
-
 export const registerUser = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
@@ -39,10 +40,8 @@ export const registerUser = async (req, res) => {
     }
 
     const otp = crypto.randomInt(100000, 1000000).toString();
-
     const otpHash = await bcrypt.hash(otp, 10);
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
     await OTP.deleteMany({ email });
@@ -85,7 +84,6 @@ export const registerUser = async (req, res) => {
 // ===============================
 // CUSTOMER VERIFY OTP
 // ===============================
-
 export const verifyOTP = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -168,9 +166,8 @@ export const verifyOTP = async (req, res) => {
 };
 
 // ===============================
-// CUSTOMER LOGIN
+// CUSTOMER LOGIN & DRIVER
 // ===============================
-
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -211,16 +208,10 @@ export const loginUser = async (req, res) => {
       },
     );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
     return res.status(200).json({
       success: true,
       message: "Login successful",
+      token,
       user: {
         id: user._id,
         name: user.name,
@@ -228,6 +219,7 @@ export const loginUser = async (req, res) => {
         phone: user.phone,
         role: user.role,
         driverStatus: user.driverStatus,
+        profileImage: user.profileImage,
       },
     });
   } catch (error) {
@@ -240,6 +232,95 @@ export const loginUser = async (req, res) => {
   }
 };
 
+// ===============================
+// CUSTOMER GET PROFILE
+// ===============================
+export const customerGetProfile = async (req, res) => {
+  try {
+    const { userId } = req.user;
+
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile fetched successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("CUSTOMER GET PROFILE ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+// ===============================
+// CUSTOMER UPDATE PROFILE
+// ===============================
+export const customerUpdateProfile = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const { name, phone } = req.body;
+
+    if (!name || !phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Name and phone are required",
+      });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    user.name = name;
+    user.phone = phone;
+
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
+      const result = await cloudinary.uploader.upload(fileUri, {
+        folder: "rydo/profile-images",
+      });
+      user.profileImage = result.secure_url;
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        profileImage: user.profileImage,
+      },
+    });
+  } catch (error) {
+    console.error("CUSTOMER UPDATE PROFILE ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 
 // ===============================
 // DRIVER REGISTER
@@ -247,9 +328,25 @@ export const loginUser = async (req, res) => {
 
 export const registerDriver = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const {
+      name,
+      email,
+      phone,
+      password,
+      vehicleType,
+      vehicleNumber,
+      vehicleModel,
+    } = req.body;
 
-    if (!name || !email || !phone || !password) {
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !password ||
+      !vehicleType ||
+      !vehicleNumber ||
+      !vehicleModel
+    ) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -281,13 +378,20 @@ export const registerDriver = async (req, res) => {
       email,
       phone,
       password: hashedPassword,
+
       role: "driver",
+
       driverStatus: "pending",
+
+      vehicleType,
+      vehicleNumber,
+      vehicleModel,
     });
 
     return res.status(201).json({
       success: true,
       message: "Driver registration successful",
+
       driver: {
         id: driver._id,
         name: driver.name,
@@ -295,6 +399,9 @@ export const registerDriver = async (req, res) => {
         phone: driver.phone,
         role: driver.role,
         driverStatus: driver.driverStatus,
+        vehicleType: driver.vehicleType,
+        vehicleNumber: driver.vehicleNumber,
+        vehicleModel: driver.vehicleModel,
       },
     });
   } catch (error) {
@@ -393,6 +500,15 @@ export const updateDriverProfile = async (req, res) => {
     driver.vehicleNumber = vehicleNumber;
     driver.vehicleModel = vehicleModel;
 
+    // profile image
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
+      const result = await cloudinary.uploader.upload(fileUri, {
+        folder: "rydo/profile-images",
+      });
+      driver.profileImage = result.secure_url;
+    }
+
     await driver.save();
 
     return res.status(200).json({
@@ -408,6 +524,7 @@ export const updateDriverProfile = async (req, res) => {
         vehicleType: driver.vehicleType,
         vehicleNumber: driver.vehicleNumber,
         vehicleModel: driver.vehicleModel,
+        profileImage: driver.profileImage,
       },
     });
   } catch (error) {
@@ -421,78 +538,115 @@ export const updateDriverProfile = async (req, res) => {
 };
 
 // ===============================
-// ADMIN LOGIN 
+// ADMIN GET PROFILE
 // ===============================
-export const loginAdmin = async (req, res) => {
+export const getAdminProfile = async (req, res) => {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Email and password are required",
-      });
-    }
-
-    const admin = await User.findOne({ email });
+    const admin = await User.findById(req.user.userId).select("-password");
 
     if (!admin) {
-      return res.status(401).json({
+      return res.status(404).json({
         success: false,
-        message: "Invalid email or password",
+        message: "Admin not found",
       });
     }
 
     if (admin.role !== "admin") {
       return res.status(403).json({
         success: false,
-        message: "Admin access denied",
+        message: "Access denied",
       });
     }
-
-    const isPasswordMatch = await bcrypt.compare(password, admin.password);
-
-    if (!isPasswordMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password",
-      });
-    }
-
-    const token = jwt.sign(
-      {
-        userId: admin._id,
-        role: admin.role,
-      },
-      process.env.SECRET_KEY,
-      {
-        expiresIn: "7d",
-      },
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
 
     return res.status(200).json({
       success: true,
-      message: "Admin login successful",
-      admin: {
-        id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        role: admin.role,
-      },
+      admin,
     });
   } catch (error) {
-    console.error("ADMIN LOGIN ERROR:", error);
+    console.error("GET ADMIN PROFILE ERROR:", error);
 
     return res.status(500).json({
       success: false,
       message: "Internal server error",
+    });
+  }
+};
+
+// ===============================
+// ADMIN UPDATE PROFILE
+// ===============================
+export const updateAdminProfile = async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+
+    if (!name || !phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Name and phone are required",
+      });
+    }
+
+    const admin = await User.findById(req.user.userId);
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found",
+      });
+    }
+
+    if (admin.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
+      });
+    }
+
+    const existingPhone = await User.findOne({
+      phone,
+      _id: { $ne: admin._id },
+    });
+
+    if (existingPhone) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number already registered",
+      });
+    }
+
+    admin.name = name;
+    admin.phone = phone;
+
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
+
+      const result = await cloudinary.uploader.upload(fileUri, {
+        folder: "rydo/profile-images",
+      });
+
+      admin.profileImage = result.secure_url;
+    }
+
+    await admin.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin profile updated successfully",
+      admin: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        phone: admin.phone,
+        role: admin.role,
+        profileImage: admin.profileImage,
+      },
+    });
+  } catch (error) {
+    console.error("UPDATE ADMIN PROFILE ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
     });
   }
 };
@@ -531,9 +685,8 @@ export const checkAdminAuth = async (req, res) => {
   }
 };
 
-
 // ===============================
-// ADMIN GET ALL DRIVERS 
+// ADMIN GET ALL DRIVERS
 // ===============================
 export const getAllDrivers = async (req, res) => {
   try {
@@ -556,7 +709,6 @@ export const getAllDrivers = async (req, res) => {
     });
   }
 };
-
 
 // ===============================
 // ADMIN APPROVE DRIVER
@@ -689,3 +841,6 @@ export const rejectDriver = async (req, res) => {
     });
   }
 };
+
+
+

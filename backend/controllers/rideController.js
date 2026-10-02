@@ -4,20 +4,39 @@ import User from "../models/userModel.js";
 // customer
 export const createRide = async (req, res) => {
   try {
-    const { pickup, destination, vehicleType } = req.body;
+    const { pickup, destination, vehicleType, distance } = req.body;
 
-    if (!pickup || !destination || !vehicleType) {
+    if (!pickup || !destination || !vehicleType || !distance) {
       return res.status(400).json({
         success: false,
         message: "All ride details are required",
       });
     }
 
+    const vehicleRates = {
+      Bike: 8,
+      Auto: 12,
+      Car: 15,
+    };
+
+    const rate = vehicleRates[vehicleType];
+
+    if (!rate) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid vehicle type",
+      });
+    }
+
+    const fare = distance * rate;
+
     const ride = await Ride.create({
       customer: req.user.userId,
       pickup,
       destination,
       vehicleType,
+      distance,
+      fare,
     });
 
     return res.status(201).json({
@@ -63,7 +82,7 @@ export const getDriverRideRequests = async (req, res) => {
       status: "requested",
       driver: null,
     })
-      .populate("customer", "name phone")
+      .populate("customer", "name phone profileImage")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({

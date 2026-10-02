@@ -43,7 +43,7 @@ const DriverDashboard = () => {
 
           {/* My Rides */}
           <Link
-            to="/driver/rides"
+            to="/driver/my-rides"
             className="rounded-2xl border border-gray-800 bg-gray-900 p-6 transition hover:border-blue-500"
           >
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-green-500/10 text-2xl">
@@ -57,21 +57,7 @@ const DriverDashboard = () => {
             </p>
           </Link>
 
-          {/* Profile */}
-          <Link
-            to="/driver/profile"
-            className="rounded-2xl border border-gray-800 bg-gray-900 p-6 transition hover:border-blue-500"
-          >
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-2xl">
-              👤
-            </div>
-
-            <h3 className="text-lg font-semibold">My Profile</h3>
-
-            <p className="mt-2 text-sm text-gray-400">
-              View and update your driver profile.
-            </p>
-          </Link>
+          
         </div>
       </main>
     </div>

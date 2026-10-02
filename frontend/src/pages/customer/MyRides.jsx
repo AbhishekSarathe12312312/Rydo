@@ -13,7 +13,9 @@ const MyRides = () => {
       const { data } = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/ride/my-rides`,
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         },
       );
 
@@ -85,104 +87,120 @@ const MyRides = () => {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <header className="border-b border-gray-800 bg-gray-900">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
           <button
             onClick={() => navigate("/customer/dashboard")}
-            className="text-sm text-gray-400 transition hover:text-white"
+            className="text-xs text-gray-400 transition hover:text-white"
           >
             ← Dashboard
           </button>
 
-          <h1 className="text-2xl font-bold text-blue-500">My Rides</h1>
+          <h1 className="text-xl font-bold text-blue-500">My Rides</h1>
 
-          <div className="w-16"></div>
+          <div className="w-14"></div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-10">
+      <main className="mx-auto max-w-6xl px-5 py-8">
         {rides.length === 0 ? (
-          <div className="rounded-2xl border border-gray-800 bg-gray-900 p-10 text-center">
-            <div className="mb-4 text-5xl">🚗</div>
+          <div className="rounded-2xl border border-gray-800 bg-gray-900 p-8 text-center">
+            <div className="mb-3 text-4xl">🚗</div>
 
-            <h2 className="text-xl font-semibold">No rides found</h2>
+            <h2 className="text-lg font-semibold">No rides found</h2>
 
-            <p className="mt-2 text-gray-400">
+            <p className="mt-2 text-sm text-gray-400">
               You haven't booked any rides yet.
             </p>
 
             <button
               onClick={() => navigate("/customer/book-ride")}
-              className="mt-6 rounded-lg bg-blue-600 px-6 py-3 font-semibold transition hover:bg-blue-700"
+              className="mt-5 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold transition hover:bg-blue-700"
             >
               Book a Ride
             </button>
           </div>
         ) : (
-          <div className="space-y-5">
+          <div className="space-y-4">
             {rides.map((ride) => {
               const statusDetails = getStatusDetails(ride.status);
 
               return (
                 <div
                   key={ride._id}
-                  className="rounded-2xl border border-gray-800 bg-gray-900 p-6 shadow-lg"
+                  className="rounded-2xl border border-gray-800 bg-gray-900 p-5 shadow-lg"
                 >
                   {/* Header */}
-                  <div className="mb-6 flex items-center justify-between">
+                  <div className="mb-5 flex items-center justify-between">
                     <div>
-                      <h2 className="text-lg font-semibold">
+                      <h2 className="text-base font-semibold">
                         {ride.vehicleType} Ride
                       </h2>
 
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-1 text-[11px] text-gray-500">
                         {new Date(ride.createdAt).toLocaleString()}
                       </p>
                     </div>
 
                     <span
-                      className={`rounded-full px-3 py-1 text-sm ${statusDetails.className}`}
+                      className={`rounded-full px-2.5 py-1 text-xs ${statusDetails.className}`}
                     >
                       {statusDetails.label}
                     </span>
                   </div>
 
                   {/* Route */}
-                  <div className="grid gap-5 md:grid-cols-2">
-                    <div className="rounded-xl bg-gray-800 p-4">
-                      <p className="text-xs font-medium text-gray-500">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="rounded-xl bg-gray-800 p-3">
+                      <p className="text-[11px] font-medium text-gray-500">
                         PICKUP
                       </p>
 
-                      <p className="mt-1 text-gray-200">{ride.pickup}</p>
+                      <p className="mt-1 text-sm text-gray-200">
+                        {ride.pickup}
+                      </p>
                     </div>
 
-                    <div className="rounded-xl bg-gray-800 p-4">
-                      <p className="text-xs font-medium text-gray-500">
+                    <div className="rounded-xl bg-gray-800 p-3">
+                      <p className="text-[11px] font-medium text-gray-500">
                         DESTINATION
                       </p>
 
-                      <p className="mt-1 text-gray-200">{ride.destination}</p>
+                      <p className="mt-1 text-sm text-gray-200">
+                        {ride.destination}
+                      </p>
                     </div>
                   </div>
 
                   {/* Ride Information */}
-                  <div className="mt-5 grid gap-4 sm:grid-cols-3">
-                    <div className="rounded-xl bg-gray-800 p-4">
-                      <p className="text-xs text-gray-500">FARE</p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+                    <div className="rounded-xl bg-gray-800 p-3">
+                      <p className="text-[11px] text-gray-500">FARE</p>
 
-                      <p className="mt-1 font-semibold">₹{ride.fare || 0}</p>
+                      <p className="mt-1 text-sm font-semibold">
+                        ₹{ride.fare || 0}
+                      </p>
                     </div>
 
-                    <div className="rounded-xl bg-gray-800 p-4">
-                      <p className="text-xs text-gray-500">VEHICLE</p>
+                    <div className="rounded-xl bg-gray-800 p-3">
+                      <p className="text-[11px] text-gray-500">VEHICLE</p>
 
-                      <p className="mt-1 text-gray-300">{ride.vehicleType}</p>
+                      <p className="mt-1 text-sm text-gray-300">
+                        {ride.vehicleType}
+                      </p>
                     </div>
 
-                    <div className="rounded-xl bg-gray-800 p-4">
-                      <p className="text-xs text-gray-500">STATUS</p>
+                    <div className="rounded-xl bg-gray-800 p-3">
+                      <p className="text-[11px] text-gray-500">DISTANCE</p>
 
-                      <p className="mt-1 capitalize text-gray-300">
+                      <p className="mt-1 text-sm font-semibold">
+                        {ride.distance || 0} km
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-gray-800 p-3">
+                      <p className="text-[11px] text-gray-500">STATUS</p>
+
+                      <p className="mt-1 text-sm capitalize text-gray-300">
                         {ride.status}
                       </p>
                     </div>
@@ -190,42 +208,44 @@ const MyRides = () => {
 
                   {/* Driver Details */}
                   {ride.driver ? (
-                    <div className="mt-5 rounded-xl border border-gray-800 bg-gray-800/50 p-5">
-                      <p className="text-sm font-medium text-gray-400">
+                    <div className="mt-4 rounded-xl border border-gray-800 bg-gray-800/50 p-4">
+                      <p className="text-xs font-medium text-gray-400">
                         Driver Details
                       </p>
 
-                      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                      <div className="mt-3 grid gap-3 sm:grid-cols-2">
                         <div>
-                          <p className="text-xs text-gray-500">DRIVER NAME</p>
+                          <p className="text-[11px] text-gray-500">
+                            DRIVER NAME
+                          </p>
 
-                          <p className="mt-1 font-medium text-white">
+                          <p className="mt-1 text-sm font-medium text-white">
                             {ride.driver.name}
                           </p>
                         </div>
 
                         <div>
-                          <p className="text-xs text-gray-500">PHONE</p>
+                          <p className="text-[11px] text-gray-500">PHONE</p>
 
-                          <p className="mt-1 font-medium text-white">
+                          <p className="mt-1 text-sm font-medium text-white">
                             {ride.driver.phone}
                           </p>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="mt-5 rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4">
-                      <p className="text-sm text-yellow-400">
+                    <div className="mt-4 rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-3">
+                      <p className="text-xs text-yellow-400">
                         Waiting for a driver to accept your ride...
                       </p>
                     </div>
                   )}
 
                   {/* Ride ID */}
-                  <div className="mt-5 border-t border-gray-800 pt-4">
-                    <p className="text-xs text-gray-500">Ride ID</p>
+                  <div className="mt-4 border-t border-gray-800 pt-3">
+                    <p className="text-[11px] text-gray-500">Ride ID</p>
 
-                    <p className="mt-1 break-all text-sm text-gray-500">
+                    <p className="mt-1 break-all text-xs text-gray-500">
                       {ride._id}
                     </p>
                   </div>

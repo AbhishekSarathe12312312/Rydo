@@ -32,9 +32,14 @@ const rideSchema = new mongoose.Schema(
       required: true,
     },
 
+    distance: {
+      type: Number,
+      required: true,
+    },
+
     fare: {
       type: Number,
-      default: 0,
+      required: true,
     },
 
     status: {

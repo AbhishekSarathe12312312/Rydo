@@ -12,7 +12,7 @@ const createAdmin = async () => {
     console.log("MongoDB connected");
 
     const email = "admin@rydo.com";
-    const password = "Admin@123";
+    const password = "123123";
 
     const existingAdmin = await User.findOne({
       email,

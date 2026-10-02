@@ -13,7 +13,9 @@ const ManageDrivers = () => {
       const { data } = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/user/admin/drivers`,
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         },
       );
 
@@ -41,7 +43,9 @@ const ManageDrivers = () => {
           driverId,
         },
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         },
       );
 
@@ -76,7 +80,9 @@ const ManageDrivers = () => {
           driverId,
         },
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         },
       );
 

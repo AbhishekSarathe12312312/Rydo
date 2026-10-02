@@ -13,7 +13,9 @@ const DriverRideRequests = () => {
       const { data } = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/ride/driver/requests`,
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         },
       );
 
@@ -43,7 +45,9 @@ const DriverRideRequests = () => {
           rideId,
         },
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         },
       );
 
@@ -113,18 +117,33 @@ const DriverRideRequests = () => {
                 className="rounded-2xl border border-gray-800 bg-gray-900 p-6"
               >
                 <div className="mb-5 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-400">Customer</p>
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 overflow-hidden rounded-full bg-blue-600">
+                      {ride.customer?.profileImage ? (
+                        <img
+                          src={ride.customer.profileImage}
+                          alt={ride.customer.name || "Customer"}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center font-semibold text-white">
+                          {ride.customer?.name?.charAt(0).toUpperCase() || "C"}
+                        </div>
+                      )}
+                    </div>
 
-                    <h3 className="mt-1 text-lg font-semibold">
-                      {ride.customer?.name || "Customer"}
-                    </h3>
+                    <div>
+                      <p className="text-sm text-gray-400">Customer</p>
 
-                    <p className="mt-1 text-sm text-gray-500">
-                      {ride.customer?.phone || ""}
-                    </p>
+                      <h3 className="mt-1 text-lg font-semibold">
+                        {ride.customer?.name || "Customer"}
+                      </h3>
+
+                      <p className="mt-1 text-sm text-gray-500">
+                        {ride.customer?.phone || ""}
+                      </p>
+                    </div>
                   </div>
-
                   <span className="rounded-full bg-yellow-500/10 px-3 py-1 text-sm text-yellow-400">
                     Requested
                   </span>

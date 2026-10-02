@@ -13,7 +13,9 @@ const DriverRides = () => {
       const { data } = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/ride/driver/my-AcceptedRides`,
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         },
       );
 
@@ -21,10 +23,7 @@ const DriverRides = () => {
         setRides(data.rides);
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to load rides",
-      );
+      toast.error(error.response?.data?.message || "Failed to load rides");
     } finally {
       setLoading(false);
     }
@@ -44,7 +43,9 @@ const DriverRides = () => {
           rideId,
         },
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         },
       );
 
@@ -63,10 +64,7 @@ const DriverRides = () => {
         );
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to start ride",
-      );
+      toast.error(error.response?.data?.message || "Failed to start ride");
     } finally {
       setActionLoading(null);
     }
@@ -82,7 +80,9 @@ const DriverRides = () => {
           rideId,
         },
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         },
       );
 
@@ -101,10 +101,7 @@ const DriverRides = () => {
         );
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to complete ride",
-      );
+      toast.error(error.response?.data?.message || "Failed to complete ride");
     } finally {
       setActionLoading(null);
     }
@@ -129,9 +126,7 @@ const DriverRides = () => {
             ← Back
           </Link>
 
-          <h1 className="text-2xl font-bold text-blue-500">
-            Rydo
-          </h1>
+          <h1 className="text-2xl font-bold text-blue-500">Rydo</h1>
 
           <div className="w-10"></div>
         </div>
@@ -139,9 +134,7 @@ const DriverRides = () => {
 
       <main className="mx-auto max-w-4xl px-6 py-10">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold">
-            My Rides
-          </h2>
+          <h2 className="text-3xl font-bold">My Rides</h2>
 
           <p className="mt-2 text-gray-400">
             View and manage your assigned rides.
@@ -152,9 +145,7 @@ const DriverRides = () => {
           <div className="rounded-2xl border border-gray-800 bg-gray-900 p-10 text-center">
             <div className="mb-4 text-5xl">🚗</div>
 
-            <h3 className="text-xl font-semibold">
-              No Rides
-            </h3>
+            <h3 className="text-xl font-semibold">No Rides</h3>
 
             <p className="mt-2 text-gray-400">
               You have no assigned rides yet.
@@ -169,9 +160,7 @@ const DriverRides = () => {
               >
                 <div className="mb-5 flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-400">
-                      Customer
-                    </p>
+                    <p className="text-sm text-gray-400">Customer</p>
 
                     <h3 className="mt-1 text-lg font-semibold">
                       {ride.customer?.name || "Customer"}
@@ -189,43 +178,27 @@ const DriverRides = () => {
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="rounded-xl bg-gray-800 p-4">
-                    <p className="text-sm text-gray-400">
-                      Pickup
-                    </p>
+                    <p className="text-sm text-gray-400">Pickup</p>
 
-                    <p className="mt-1 font-medium">
-                      {ride.pickup}
-                    </p>
+                    <p className="mt-1 font-medium">{ride.pickup}</p>
                   </div>
 
                   <div className="rounded-xl bg-gray-800 p-4">
-                    <p className="text-sm text-gray-400">
-                      Destination
-                    </p>
+                    <p className="text-sm text-gray-400">Destination</p>
 
-                    <p className="mt-1 font-medium">
-                      {ride.destination}
-                    </p>
+                    <p className="mt-1 font-medium">{ride.destination}</p>
                   </div>
 
                   <div className="rounded-xl bg-gray-800 p-4">
-                    <p className="text-sm text-gray-400">
-                      Vehicle Type
-                    </p>
+                    <p className="text-sm text-gray-400">Vehicle Type</p>
 
-                    <p className="mt-1 font-medium">
-                      {ride.vehicleType}
-                    </p>
+                    <p className="mt-1 font-medium">{ride.vehicleType}</p>
                   </div>
 
                   <div className="rounded-xl bg-gray-800 p-4">
-                    <p className="text-sm text-gray-400">
-                      Fare
-                    </p>
+                    <p className="text-sm text-gray-400">Fare</p>
 
-                    <p className="mt-1 font-medium">
-                      ₹{ride.fare || 0}
-                    </p>
+                    <p className="mt-1 font-medium">₹{ride.fare || 0}</p>
                   </div>
                 </div>
 
@@ -235,9 +208,7 @@ const DriverRides = () => {
                     disabled={actionLoading === ride._id}
                     className="mt-5 w-full rounded-lg bg-green-600 py-3 font-semibold transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {actionLoading === ride._id
-                      ? "Starting..."
-                      : "Start Ride"}
+                    {actionLoading === ride._id ? "Starting..." : "Start Ride"}
                   </button>
                 )}
 
@@ -260,9 +231,7 @@ const DriverRides = () => {
                 )}
 
                 <div className="mt-5 border-t border-gray-800 pt-4">
-                  <p className="text-xs text-gray-500">
-                    Ride ID
-                  </p>
+                  <p className="text-xs text-gray-500">Ride ID</p>
 
                   <p className="mt-1 break-all text-sm text-gray-400">
                     {ride._id}

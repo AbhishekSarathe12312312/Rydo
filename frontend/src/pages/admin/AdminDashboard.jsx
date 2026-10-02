@@ -14,7 +14,9 @@ const AdminDashboard = () => {
       const { data } = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/user/admin/check`,
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
         },
       );
 
@@ -25,8 +27,6 @@ const AdminDashboard = () => {
       toast.error(
         error.response?.data?.message || "Admin authentication failed",
       );
-
-      navigate("/admin/login");
     } finally {
       setLoading(false);
     }

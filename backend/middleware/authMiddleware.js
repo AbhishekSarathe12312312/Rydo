@@ -2,14 +2,16 @@ import jwt from "jsonwebtoken";
 
 export const authMiddleware = (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
         message: "Not authenticated",
       });
     }
+
+    const token = authHeader.split(" ")[1];
 
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
@@ -25,26 +27,19 @@ export const authMiddleware = (req, res, next) => {
 };
 
 export const adminMiddleware = (req, res, next) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: "Not authenticated",
-      });
-    }
-
-    if (req.user.role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Admin access required",
-      });
-    }
-
-    next();
-  } catch (error) {
-    return res.status(403).json({
+  if (!req.user) {
+    return res.status(401).json({
       success: false,
-      message: "Admin access denied",
+      message: "Not authenticated",
     });
   }
+
+  if (req.user.role !== "admin") {
+    return res.status(403).json({
+      success: false,
+      message: "Admin access required",
+    });
+  }
+
+  next();
 };
