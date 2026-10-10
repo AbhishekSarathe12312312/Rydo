@@ -120,133 +120,77 @@ const MyRides = () => {
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {rides.map((ride) => {
               const statusDetails = getStatusDetails(ride.status);
 
               return (
                 <div
                   key={ride._id}
-                  className="rounded-2xl border border-gray-800 bg-gray-900 p-5 shadow-lg"
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl border border-gray-800 bg-gray-900 p-4 shadow-md transition hover:border-gray-700"
                 >
-                  {/* Header */}
-                  <div className="mb-5 flex items-center justify-between">
-                    <div>
-                      <h2 className="text-base font-semibold">
-                        {ride.vehicleType} Ride
-                      </h2>
-
-                      <p className="mt-1 text-[11px] text-gray-500">
-                        {new Date(ride.createdAt).toLocaleString()}
-                      </p>
+                  {/* Left: Icon & Details */}
+                  <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-800 text-xl">
+                      🚗
                     </div>
 
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-xs ${statusDetails.className}`}
-                    >
-                      {statusDetails.label}
-                    </span>
-                  </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-sm font-semibold text-white truncate">
+                          {ride.vehicleType} Ride
+                        </h2>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${statusDetails.className}`}
+                        >
+                          {statusDetails.label}
+                        </span>
+                      </div>
 
-                  {/* Route */}
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="rounded-xl bg-gray-800 p-3">
-                      <p className="text-[11px] font-medium text-gray-500">
-                        PICKUP
-                      </p>
-
-                      <p className="mt-1 text-sm text-gray-200">
+                      <p className="mt-1 text-xs text-gray-300 truncate">
+                        <span className="text-gray-500 font-medium">From:</span>{" "}
                         {ride.pickup}
                       </p>
-                    </div>
-
-                    <div className="rounded-xl bg-gray-800 p-3">
-                      <p className="text-[11px] font-medium text-gray-500">
-                        DESTINATION
-                      </p>
-
-                      <p className="mt-1 text-sm text-gray-200">
+                      <p className="text-xs text-gray-300 truncate">
+                        <span className="text-gray-500 font-medium">To:</span>{" "}
                         {ride.destination}
                       </p>
+
+                      <div className="mt-2 flex items-center gap-3 text-[11px] text-gray-400">
+                        <span>{new Date(ride.createdAt).toLocaleString()}</span>
+                        <span>•</span>
+                        <span>{ride.distance || 0} km</span>
+                        {ride.driver && (
+                          <>
+                            <span>•</span>
+                            <span className="text-blue-400">
+                              Driver: {ride.driver.name} ({ride.driver.phone})
+                            </span>
+                          </>
+                        )}
+                      </div>
+
+                      {!ride.driver && (
+                        <p className="mt-1 text-[11px] text-yellow-400">
+                          Waiting for a driver to accept your ride...
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  {/* Ride Information */}
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-4">
-                    <div className="rounded-xl bg-gray-800 p-3">
-                      <p className="text-[11px] text-gray-500">FARE</p>
-
-                      <p className="mt-1 text-sm font-semibold">
+                  {/* Right: Fare & ID */}
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-800 gap-1">
+                    <div className="text-left sm:text-right">
+                      <p className="text-[10px] text-gray-500 uppercase">
+                        Fare
+                      </p>
+                      <p className="text-lg font-bold text-white">
                         ₹{ride.fare || 0}
                       </p>
                     </div>
 
-                    <div className="rounded-xl bg-gray-800 p-3">
-                      <p className="text-[11px] text-gray-500">VEHICLE</p>
-
-                      <p className="mt-1 text-sm text-gray-300">
-                        {ride.vehicleType}
-                      </p>
-                    </div>
-
-                    <div className="rounded-xl bg-gray-800 p-3">
-                      <p className="text-[11px] text-gray-500">DISTANCE</p>
-
-                      <p className="mt-1 text-sm font-semibold">
-                        {ride.distance || 0} km
-                      </p>
-                    </div>
-
-                    <div className="rounded-xl bg-gray-800 p-3">
-                      <p className="text-[11px] text-gray-500">STATUS</p>
-
-                      <p className="mt-1 text-sm capitalize text-gray-300">
-                        {ride.status}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Driver Details */}
-                  {ride.driver ? (
-                    <div className="mt-4 rounded-xl border border-gray-800 bg-gray-800/50 p-4">
-                      <p className="text-xs font-medium text-gray-400">
-                        Driver Details
-                      </p>
-
-                      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                        <div>
-                          <p className="text-[11px] text-gray-500">
-                            DRIVER NAME
-                          </p>
-
-                          <p className="mt-1 text-sm font-medium text-white">
-                            {ride.driver.name}
-                          </p>
-                        </div>
-
-                        <div>
-                          <p className="text-[11px] text-gray-500">PHONE</p>
-
-                          <p className="mt-1 text-sm font-medium text-white">
-                            {ride.driver.phone}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="mt-4 rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-3">
-                      <p className="text-xs text-yellow-400">
-                        Waiting for a driver to accept your ride...
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Ride ID */}
-                  <div className="mt-4 border-t border-gray-800 pt-3">
-                    <p className="text-[11px] text-gray-500">Ride ID</p>
-
-                    <p className="mt-1 break-all text-xs text-gray-500">
-                      {ride._id}
+                    <p className="text-[10px] text-gray-600 truncate max-w-[140px]">
+                      ID: {ride._id}
                     </p>
                   </div>
                 </div>
